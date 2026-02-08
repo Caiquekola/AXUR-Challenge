@@ -37,44 +37,60 @@ public class HtmlAnalyzer {
         } catch (URISyntaxException | IOException | InterruptedException e) {
             System.err.println("URL connection error");
         }
-        
 
         String[] lines = response.body().split("\\R");
-        analyzeHtml(lines);
+        String result = analyzeHtml(lines);
+        System.out.println(result);
     }
 
-    private static void analyzeHtml(String[] lines) {
+    private static String analyzeHtml(String[] lines) {
         Stack<String> stack = new Stack<>();
-        String deepestText = null;
+        String text = null;
         int maxDepth = -1;
+        String malformed = "malformed HTML";
 
         for (String line : lines) {
             line = line.trim();
-            if (line.isEmpty()) continue; 
+            if (line.isEmpty()) {
+                continue;
+            }
+
+            if (line.startsWith("<") && !line.endsWith(">")) {
+                return malformed;
+            }
+
             if (line.startsWith("</")) {
+                if (line.length() < 4) {
+                    return malformed;
+                }
                 String tag = line.substring(2, line.length() - 1);
                 if (stack.isEmpty() || !stack.peek().equals(tag)) {
-                    System.out.println("malformed HTML"); 
-                    return;
+                    return malformed;
                 }
                 stack.pop();
             } else if (line.startsWith("<")) {
+                if (line.length() < 3) {
+                    return malformed;
+                }
                 String tag = line.substring(1, line.length() - 1);
+                if (tag.endsWith("/")) {
+                    return malformed;
+                }
                 stack.push(tag);
             } else {
-                int currentDepth = stack.size();
-                if (currentDepth > maxDepth) {
-                    maxDepth = currentDepth;
-                    deepestText = line; 
+                int depth = stack.size();
+                if (depth > maxDepth) {
+                    maxDepth = depth;
+                    text = line;
                 }
             }
         }
 
-        // Se a pilha não estiver vazia, o HTML não foi fechado corretamente
-        if (!stack.isEmpty()) {
-            System.out.println("malformed HTML"); 
-        } else if (deepestText != null) {
-            System.out.println(deepestText); 
+        if (text != null) {
+            return text;
         }
+        // Stack is not empty
+        return malformed;
+
     }
 }

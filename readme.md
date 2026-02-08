@@ -1,1 +1,2 @@
-axur challenge
+EASTER_EGG_URLS
+
