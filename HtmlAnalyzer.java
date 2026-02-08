@@ -26,13 +26,20 @@ public class HtmlAnalyzer {
         HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
         System.out.println(response.body());
         String[] lines = response.body().split("\\R");
-        int idxI = response.body().indexOf("<body>", 0)+6;
-        int idxE = response.body().indexOf("</body>",idxI);
-        System.out.println("idxI "+idxI + " - idxE "+idxE);
-        System.out.println(response.body().substring(idxI,idxE).trim());
+        /*
+            Varrer 
+         */
+        int tagsCount = 0, idxI = 0, idxE = 0;
+        String text = "";
         for (int i = 0; i < lines.length; i++) {
-            
-                System.out.println("Linha "+i+":"+lines[i]);
+            if(lines[i].contains("</")&& lines[i].contains(">")) {
+                                idxE = i;
+                        }
+                if(lines[i].contains("<") && lines[i].contains(">")) {
+                        idxI = i;
+                }
+                System.out.println("Linha "+i+":"+lines[i]); //aw  3
         }
+        System.out.println(response.body().substring(idxI,idxE).trim());
     }
 }
