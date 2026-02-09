@@ -15,6 +15,7 @@ import java.util.Stack;
 public class HtmlAnalyzer {
     public static void main(String[] args) {
         String url = "http://hiring.axreng.com/internship/example1.html";
+        // i found the anothers examples
         if (args.length != 0)
             url = args[0];
 
